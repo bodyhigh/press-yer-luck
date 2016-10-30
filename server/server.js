@@ -24,4 +24,4 @@ var server = app.listen(app.get('port'), function() {
 });
 
 //start up socket.io
-// socketio(server,client);
+socketio(server,redisClient);

@@ -1,8 +1,8 @@
 var env = require('./env');
 
 var config = {
-    PORT: getEnv('PORT'),
-    NODE_ENV: getEnv('NODE_ENV')
+    PORT: getEnv('PORT') || 5000,
+    NODE_ENV: getEnv('NODE_ENV') || 'development'
 };
 
 function getEnv(variable) {

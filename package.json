@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --watch --reporter spec test",
+    "test": "set NODE_ENV=test&& mocha --watch --reporter spec test",
     "start": "node ./server/bin/www",
     "postinstall": "bower install",
     "nodemon": "nodemon ./server/bin/www"
