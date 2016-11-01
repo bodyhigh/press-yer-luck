@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "set NODE_ENV=test&& mocha --watch --reporter spec test",
+    "coverage": "istanbul cover mocha -- test/*.js",
     "start": "node ./server/bin/www",
     "postinstall": "bower install",
     "nodemon": "nodemon ./server/bin/www"
@@ -30,6 +31,7 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
     "should": "^11.1.1",
     "supertest": "^2.0.1"
