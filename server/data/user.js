@@ -13,9 +13,10 @@ var removeUser = function(username, redisClient) {
 
 var setUser = function(user, expire, redisClient) {
     return q.promise(function (resolve, reject, notify) {
+        console.log('!!!!!!!!!!!!!!!');
+        console.log(user.username);
         redisClient.multi()
-            .hmset(user.username, 'totalPoints', user.totalPoints)
-            .hincrby(user.username, 'totalTurns', 1)
+            .hmset(user.username, 'totalPoints', '0', 'totalTurns', '0')
             .expire(user.username, expire)
             .sadd('users', user.username)
             .expire('users', expire)

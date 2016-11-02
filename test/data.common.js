@@ -4,7 +4,7 @@ var redisClient = require('./../server/database/redis.js');
 
 describe('Common Repo', function() {
     beforeEach('Flush Redis', function(done) {
-        // redisClient.flushdb();
+        redisClient.flushdb();
         done();
     });
 
