@@ -1,14 +1,15 @@
+var q = require('q');
 var assert = require('assert');
 var repo = require('./../server/data/repo');
 var redisClient = require('./../server/database/redis.js');
 
 describe('User Repo', function() {
     beforeEach('Flush Redis', function(done) {
-        // redisClient.flushdb();
+        redisClient.flushdb();
         done();
     });
 
-    describe('setUser()', function() {
+    describe('Function setUser()', function() {
         it('setUser enters a user record [Users] set', function(done) {
             var user = {username: 'tycho.dobbs'};
             var userResult = repo.user.setUser(user, 7200, redisClient);
@@ -21,7 +22,7 @@ describe('User Repo', function() {
         });
     });
 
-    describe('removeUser()', function() {
+    describe('Function removeUser()', function() {
         it('removes a user from [Users] set', function(done) {
             var user = {username: 'bob.dobbs'};
             repo.user.setUser(user, 7200, redisClient).done(function() {
@@ -41,7 +42,7 @@ describe('User Repo', function() {
         });
     });
 
-    describe('getUser()', function() {
+    describe('Function getUser()', function() {
         it('User object is returned if it exists as a Hash', function(done) {
             var seedUser = {username: 'calibos.dobbs'};
             // Seed a fake user to retrieve
@@ -67,6 +68,46 @@ describe('User Repo', function() {
                 assert(res === null);
                 done();
             });
+        });
+    });
+
+    describe('Function setUserScore()', function() {
+        it('Update user Hash and leaderboards, simulating 3 turns', function(done) {
+            var seedUser = {username: 'agamemnon.dobbs'};
+
+            var validateValues = function() {
+                redisClient.multi()
+                    .hgetall(seedUser.username)
+                    .zrank('leaderboard:HighestTotal', seedUser.username)
+                    .zrank('leaderboard:HighestAverage', seedUser.username)
+                    .exec(function(err, res1) {
+                        assert.equal(res1[0].totalPoints, 23);
+                        assert.equal(res1[0].totalTurns, 3);
+                        assert.equal(res1[1], 0); // 0 index in leaderboard:HighestTotal
+                        assert.equal(res1[2], 0); // 0 index in leaderboard:HighestAgerage
+
+                        redisClient.multi()
+                            .zrange('leaderboard:HighestTotal', res1[1], 1, 'withscores')
+                            .zrange('leaderboard:HighestAverage', res1[2], 1, 'withscores')
+                            .exec(function(err, res2) {
+                                // Results: [ [ 'agamemnon.dobbs', '23' ], [ 'agamemnon.dobbs', '7.666666666666667' ] ]
+                                assert.equal(res2[0][1], 23);
+                                assert.equal(res2[1][1], 7.666666666666667);
+                                done();
+                            });
+                    });
+            };
+
+            repo.user.setUser(seedUser, 7200, redisClient)
+                .then(function() {
+                    repo.user.setUserScore(seedUser.username, 20, redisClient).then(function() {
+                        repo.user.setUserScore(seedUser.username, 0, redisClient).then(function() {
+                            repo.user.setUserScore(seedUser.username, 3, redisClient).then(function() {
+                                validateValues();
+                            }, done);
+                        }, done);
+                    }, done);
+                });
         });
     });
 
