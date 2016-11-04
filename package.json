@@ -8,7 +8,6 @@
     "test-linux": "NODE_ENV=test mocha --watch --reporter spec test",
     "coverage": "istanbul cover mocha -- test/*.js",
     "start": "node ./server/bin/www",
-    /*"postinstall": "bower install",*/
     "nodemon": "nodemon ./server/bin/www"
   },
   "repository": {
