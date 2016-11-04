@@ -2,6 +2,7 @@ var q = require('q');
 var assert = require('assert');
 var repo = require('./../server/data/repo');
 var redisClient = require('./../server/database/redis.js');
+var testSeedHelper = require('./testSeed.helper');
 
 describe('User Repo', function() {
     beforeEach('Flush Redis', function(done) {
@@ -75,7 +76,7 @@ describe('User Repo', function() {
         it('Update user Hash and leaderboards, simulating 3 turns', function(done) {
             var seedUser = {username: 'agamemnon.dobbs'};
 
-            var validateValues = function() {
+            var validateResults = function() {
                 redisClient.multi()
                     .hgetall(seedUser.username)
                     .zrank('leaderboard:HighestTotal', seedUser.username)
@@ -98,16 +99,7 @@ describe('User Repo', function() {
                     });
             };
 
-            repo.user.setUser(seedUser, 7200, redisClient)
-                .then(function() {
-                    repo.user.setUserScore(seedUser.username, 20, redisClient).then(function() {
-                        repo.user.setUserScore(seedUser.username, 0, redisClient).then(function() {
-                            repo.user.setUserScore(seedUser.username, 3, redisClient).then(function() {
-                                validateValues();
-                            }, done);
-                        }, done);
-                    }, done);
-                });
+            testSeedHelper.createUserWithScores(seedUser, null, redisClient, done, validateResults);
         });
     });
 
