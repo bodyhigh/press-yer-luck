@@ -20,7 +20,6 @@ describe('Leaderboard Repo', function() {
             var validateResults = function() {
                 repo.leaderboard.getTotalLeaderboard(redisClient)
                     .then(function(leaderboard) {
-                        // console.log(leaderboard);
                         try {
                             assert.equal(leaderboard[0].username, 'foxtrot.dobbs', 'Expected to return the username foxtrot.dobbs');
                             assert.equal(leaderboard[0].score, '66');
@@ -53,7 +52,6 @@ describe('Leaderboard Repo', function() {
             var validateResults = function() {
                 repo.leaderboard.getAverageLeaderboard(redisClient)
                     .then(function(leaderboard) {
-                        // console.log(leaderboard);
                         try {
                             assert.equal(leaderboard[0].username, 'foxtrot.dobbs', 'Expected to return the username foxtrot.dobbs');
                             assert.equal(leaderboard[0].score, '22.00');

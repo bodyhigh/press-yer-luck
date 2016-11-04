@@ -1,6 +1,7 @@
 var env = process.env.NODE_ENV;
 
 var redis = require('redis');
+var helper = require('./redisHelper');
 
 if (process.env.REDISTOGO_URL) {
     var rtg   = require('url').parse(process.env.REDISTOGO_URL);
@@ -13,7 +14,5 @@ if (process.env.REDISTOGO_URL) {
 if (env === 'test') {
     client.select(15);
 }
-
-// TODO: Should I be closing the client as well?
 
 module.exports = client;

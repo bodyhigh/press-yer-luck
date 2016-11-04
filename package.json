@@ -1,10 +1,11 @@
 {
   "name": "press-yer-luck",
   "version": "1.0.0",
-  "description": "",
+  "description": "A simple game to demonstrate some basic Node/Angular development.",
   "main": "index.js",
   "scripts": {
     "test": "set NODE_ENV=test&& mocha --watch --reporter spec test",
+    "test-linux": "NODE_ENV=test mocha --watch --reporter spec test",
     "coverage": "istanbul cover mocha -- test/*.js",
     "start": "node ./server/bin/www",
     "postinstall": "bower install",
