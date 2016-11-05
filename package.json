@@ -4,10 +4,10 @@
   "description": "A simple game to demonstrate some basic Node/Angular development.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --recursive --reporter spec test",
+    "test": "nyc --reporter=html --reporter=text mocha --recursive --reporter spec test",
     "test-win": "set NODE_ENV=test&& mocha --watch --reporter spec test",
-    "test-linux": "NODE_ENV=test mocha --watch --reporter spec test",
-    "coverage": "istanbul cover mocha -- test/*.js",
+    "test-linux": "NODE_ENV=test nyc mocha --recursive --watch --reporter spec test",
+    "coverage": "nyc --reporter=html --reporter=text mocha --recursive",
     "start": "node ./server/bin/www",
     "nodemon": "nodemon ./server/bin/www"
   },
@@ -34,6 +34,7 @@
   "devDependencies": {
     "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
+    "nyc": "^8.4.0",
     "should": "^11.1.1",
     "supertest": "^2.0.1"
   }
