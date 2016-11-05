@@ -1,8 +1,8 @@
 var q = require('q');
 var assert = require('assert');
-var repo = require('./../server/data/repo');
-var redisClient = require('./../server/database/redis.js');
-var testSeedHelper = require('./testSeed.helper');
+var repo = require('./../../server/data/repo');
+var redisClient = require('./../../server/database/redis.js');
+var testSeedHelper = require('./../testSeed.helper');
 
 describe('User Repo', function() {
     beforeEach('Flush Redis', function(done) {
