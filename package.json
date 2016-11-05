@@ -4,7 +4,7 @@
   "description": "A simple game to demonstrate some basic Node/Angular development.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --watch --reporter spec test",
+    "test": "mocha --recursive --reporter spec test",
     "test-win": "set NODE_ENV=test&& mocha --watch --reporter spec test",
     "test-linux": "NODE_ENV=test mocha --watch --reporter spec test",
     "coverage": "istanbul cover mocha -- test/*.js",
