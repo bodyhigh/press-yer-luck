@@ -1,31 +1,35 @@
 var socketio = require('socket.io');
 var repo = require('./../data/repo');
 var User = require('./../data/user.model');
-console.log('In socket.js');
+var io;
 
 module.exports = initSockets;
 
 function initSockets (server, client) {
-    console.log('In initSockets');
-    var io = socketio.listen(server);
+    io = socketio.listen(server);
 
-    var users = io.of('/user').on('connection', function(socket) {
-        var user;
+    var general = io.on('connect', function(socket) {
+        repo.leaderboard.getTotalLeaderboard(client).then(function(leaderboard) {
+            socket.emit('refreshTotalLeaderboard', leaderboard);
+        });
 
-        function serverError(err, message) {
-            console.log(err);
-            socket.emit('serverError', {message: message});
-        }
+        repo.leaderboard.getAverageLeaderboard(client).then(function(leaderboard) {
+            socket.emit('refreshAverageLeaderboard', leaderboard);
+        });
 
-        socket.on('score', function(username, score, cb) {
-            user = new User(username, score, socket.id);
+        socket.on('refreshLeaderboards', function(msg) {
+            refreshLeaderboards(client);
         });
     });
 
-    var general = io.on('connection', function(socket) {
-        socket.on('pushTotalLeaderboard', function(msg) {
-            console.log('NOW IN PUSH');
-            io.emit('catchTotalLeaderboard', msg);
-        });
+}
+
+function refreshLeaderboards(redisClient) {
+    repo.leaderboard.getTotalLeaderboard(redisClient).then(function(leaderboard) {
+        io.emit('refreshTotalLeaderboard', leaderboard);
+    });
+
+    repo.leaderboard.getAverageLeaderboard(redisClient).then(function(leaderboard) {
+        io.emit('refreshAverageLeaderboard', leaderboard);
     });
 }

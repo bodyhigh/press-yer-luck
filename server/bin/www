@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+var http = require('http');
+
+var app = require('./../server');
+var server = http.createServer(app);
+var redisClient = require('./../database/redis');
+var io = require('./../sockets/socketEvents');
+
+var port = process.env.PORT || 3000;
+
+server.listen(port, function() {
+    console.log('Listening on port ' + port);
+});
+
+io.attach(server);

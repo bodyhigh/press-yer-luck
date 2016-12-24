@@ -4,76 +4,71 @@ var redisClient = require('./../../server/database/redis.js');
 var repo = require('./../../server/data/repo');
 var testSeedHelper = require('./../testSeed.helper');
 var socketio = require('./../../server/socket/socket');
+
 var io = require('socket.io-client');
 
-var socketio2 = require('socket.io');
-
-var options = {
-    transports: ['websocket'],
-    'force new connection': true
-};
-
-console.log('IN SOCKET TEST');
 describe('Socket.io Test', function() {
-    var ioclient,
-        ioclient2,
-        server = http.createServer().listen(0);
-
-    var io2 = socketio2.listen(server);
-    var general = io2.on('connection', function(socket) {
-        console.log('connecting to general');
-        socket.on('pushTotalLeaderboard', function(msg) {
-            console.log('NOW IN PUSH');
-            io.emit('catchTotalLeaderboard', msg);
-        });
-    });
+    var socket,
+        server = http.createServer().listen(0),
+        options = {
+            transports: ['websocket'],
+            'force new connection': true
+        };
 
     socketio(server, redisClient);
 
     beforeEach(function(done) {
-        // ioclient = io('http://localhost:' + server.address().port, options);
-        // ioclient2 = io('http://localhost:' + server.address().port + '/user', options);
+        // Redis Setup
+        redisClient.flushdb();
+        testSeedHelper.createUserWithScores({username: 'amitabha.dobbs'}, null, redisClient, done, null);
 
-        done();
-        // ioclient.on('connect', function() {
-        //     ioclient2.on('connect', function() {
-        //         repo.user.setUser({username: 'ashok.dobbs'}, 7200, redisClient).done(function() {
-        //             repo.user.setUser({username: 'Made.dobbs'}, 7200, redisClient).done(function() {
-        //                 done();
-        //             }, done);
-        //         }, done);
-        //     });
-        // });
+        // Socket Setup
+        socket = io.connect('http://localhost:' + server.address().port, options);
 
-        // // Populate the leaderboards
-        // var seedUser = [
-        //     {username: 'whiskey.dobbs'},
-        //     {username: 'tango.dobbs'},
-        //     {username: 'foxtrot.dobbs'}
-        // ];
-        // testSeedHelper.createThreeUsersWithScores(seedUser, redisClient, done, done);
-    });
+        socket.on('connect', function() {
+            var msg = 'connected to test client';
+            // console.log(msg);
+            done();
+        });
 
-    describe('Broadcast Total Leaderboard on setUserScore()', function() {
-        it('testing nothing', function(done) {
-            // ioclient.on('catchTotalLeaderboard', function(msg) {
-            //     console.log('Got the message: ' + msg);
-            //     assert.equal(msg, 'some message');
-            //     done();
-            // });
-
-            // io2.emit('pushTotalLeaderboard', 'some message');
-            var clients = io2.sockets.clients();
-            console.log('client len: ' + clients.length);
-            for (var i = 0; i < clients.length; i++) {
-                console.log('ITERATE');
-                clients[i].emit('pushTotalLeaderboard', 'some message');
-            }
+        socket.on('disconnect', function() {
+            var msg = 'disconnected from client';
+            // console.log(msg);
         });
     });
 
-    // afterEach(function() {
-    //     ioclient.disconnect();
-    //     // ioclient2.disconnect();
-    // });
+    afterEach(function(done) {
+        if (socket.connected) {
+            var msg = 'disconnecting ...';
+            // console.log(msg);
+            socket.disconnect();
+        } else {
+            console.log('no connection to break');
+        }
+        done();
+    });
+
+    describe('Broadcast Total Leaderboard on emitting [refreshLeaderboards]', function() {
+        it('Receiving new leaderboard stats', function(done) {
+            socket.on('refreshTotalLeaderboard', function(msg) {
+                assert.equal(msg[0].username, 'amitabha.dobbs');
+                assert.equal(msg[0].score, 23);
+                done();
+            });
+
+            socket.emit('refreshLeaderboards', {msg: 'ima client'});
+        });
+    });
+
+    describe('Broadcast Average Leaderboard on emitting [refreshLeaderboards]', function() {
+        it('Receiving new leaderboard stats', function(done) {
+            socket.on('refreshAverageLeaderboard', function(msg) {
+                assert.equal(msg[0].username, 'amitabha.dobbs');
+                assert.equal(msg[0].score, 7.666666666666667);
+                done();
+            });
+
+            socket.emit('refreshLeaderboards', {msg: 'ima client'});
+        });
+    });
 });
