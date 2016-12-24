@@ -18,23 +18,32 @@ describe('Socket.io Test', function() {
     socketio(server, redisClient);
 
     beforeEach(function(done) {
+        var socketSetup = function() {
+            // Socket Setup
+            socket = io.connect('http://127.0.0.1:' + server.address().port, options);
+
+            socket.on('connect', function() {
+                var msg = 'connected to test client';
+                // console.log(msg);
+                done();
+            });
+
+            socket.on('disconnect', function() {
+                var msg = 'disconnected from client';
+                // console.log(msg);
+            });
+        };
+
         // Redis Setup
         redisClient.flushdb();
-        testSeedHelper.createUserWithScores({username: 'amitabha.dobbs'}, null, redisClient, done, null);
-
-        // Socket Setup
-        socket = io.connect('http://localhost:' + server.address().port, options);
-
-        socket.on('connect', function() {
-            var msg = 'connected to test client';
-            // console.log(msg);
-            done();
-        });
-
-        socket.on('disconnect', function() {
-            var msg = 'disconnected from client';
-            // console.log(msg);
-        });
+        testSeedHelper.createUserWithScores({username: 'amitabha.dobbs'}, null, redisClient, done, socketSetup);
+        // redisClient.zrange('leaderboard:HighestTotal', 0, -1, 'withscores', function(err, res) {
+        //     if (err) {
+        //         console.log('!!!!!!!!!!!! ERROR: ' + err);
+        //     } else {
+        //         console.dir(res);
+        //     }
+        // });
     });
 
     afterEach(function(done) {
