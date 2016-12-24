@@ -36,14 +36,16 @@ describe('Socket.io Test', function() {
 
         // Redis Setup
         redisClient.flushdb();
-        testSeedHelper.createUserWithScores({username: 'amitabha.dobbs'}, null, redisClient, done, socketSetup);
-        // redisClient.zrange('leaderboard:HighestTotal', 0, -1, 'withscores', function(err, res) {
-        //     if (err) {
-        //         console.log('!!!!!!!!!!!! ERROR: ' + err);
-        //     } else {
-        //         console.dir(res);
-        //     }
-        // });
+        redisClient.multi()
+            .zadd('leaderboard:HighestTotal', 23, 'amitabha.dobbs')
+            .zadd('leaderboard:HighestAverage', 13.5, 'amitabha.dobbs')
+            .exec(function(err, res) {
+                if (err) {
+                    assert(false, err);
+                } else {
+                    socketSetup();
+                }
+            });
     });
 
     afterEach(function(done) {
@@ -73,7 +75,7 @@ describe('Socket.io Test', function() {
         it('Receiving new leaderboard stats', function(done) {
             socket.on('refreshAverageLeaderboard', function(msg) {
                 assert.equal(msg[0].username, 'amitabha.dobbs');
-                assert.equal(msg[0].score, 7.666666666666667);
+                assert.equal(msg[0].score, 13.5);
                 done();
             });
 
