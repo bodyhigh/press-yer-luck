@@ -1,6 +1,10 @@
 var repo = require('./../server/data/repo');
 var redisClient = require('./../server/database/redis.js');
 
+var createUser = function(seedUser, redisClient, done, cb) {
+    return repo.user.setUser(seedUser, 7200, redisClient).then(cb, done);
+};
+
 var createUserWithScores = function(seedUser, scores, redisClient, done, cb) {
     if (scores === null || !Array.isArray(scores)) {
         // Use some default scores if values are not supplied
@@ -30,6 +34,7 @@ var createThreeUsersWithScores = function(seedUsers, redisClient, done, cb) {
 };
 
 module.exports = {
+    createUser: createUser,
     createUserWithScores: createUserWithScores,
     createThreeUsersWithScores: createThreeUsersWithScores
 };

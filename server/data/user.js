@@ -1,4 +1,5 @@
 var q = require('q');
+var io = require('./../socket/socket');
 
 var removeUser = function(user, redisClient) {
     return q.promise(function(resolve, reject, notify) {

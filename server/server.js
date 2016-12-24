@@ -1,8 +1,8 @@
-var https = require('http');
+// var https = require('http');
 var express = require('express');
 var config = require('./config');
-var redisClient = require('./database/redis');
-var socketio = require('./data/socket');
+// var redisClient = require('./database/redis');
+// var socketio = require('./data/socket');
 var path = require('path');
 
 var app = express();
@@ -19,9 +19,11 @@ app.get('/', function(req, res) {
     res.status(200).send('<h1>Hello World</h1>');
 });
 
-var server = app.listen(app.get('port'), function() {
-    console.log('Express server is listening on port', server.address().port);
-});
+// var server = app.listen(app.get('port'), function() {
+//     console.log('Express server is listening on port', server.address().port);
+// });
+//
+// //start up socket.io
+// socketio(server,redisClient);
 
-//start up socket.io
-socketio(server,redisClient);
+module.exports = app;
