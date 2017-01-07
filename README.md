@@ -16,3 +16,4 @@ This project is a simple demonstration of a Leaderboard implemented in Redis in 
 ## Testing
 
 Running `npm test` will run the unit tests.
+Running an individual test `mocha ./test/repo/data.leaderboard.js` (you must have Mocha installed globally).
