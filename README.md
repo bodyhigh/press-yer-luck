@@ -15,8 +15,4 @@ This project is a simple demonstration of a Leaderboard implemented in Redis in 
 
 ## Testing
 
-Running `npm test` will run the unit tests
-
-## Running the Server
-
-Run 'npm start' to start the server
+Running `npm test` will run the unit tests.
